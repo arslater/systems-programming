@@ -1,6 +1,9 @@
 #ifndef TREE_H
 #define TREE_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 // TODO: Rename this to something more appropriate --
 //		 BC right now it;s storing BOTH data structures
 
@@ -30,10 +33,10 @@ struct stack	// cobbling together a stack
 };
 typedef struct stack Stack;
 
-void pop(Stack*);
+Node *pop(Stack*);
 void push(Stack*,Node*);
 Stack* makeStack();
-
+char* infix2postfix(char *);	// converts an infix string to a postfix string
 
 Node *makeNode(char); 		// create new node containing data
 void addRightChild(Node*,Node*);	// create right child node

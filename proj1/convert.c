@@ -13,7 +13,7 @@ Stack* makeStack()
 	return(newStack);
 }
 
-void pop(Stack* stack)
+Node* pop(Stack* stack)
 {
 	if( stack -> top != NULL)
 	{
@@ -24,7 +24,7 @@ void pop(Stack* stack)
 
 		tmp -> back = NULL;
 		tmp -> next = NULL;
-		free(tmp);
+		return(tmp);
 	}
 }
 void push(Stack *stack, Node* newNode)
@@ -44,4 +44,44 @@ void push(Stack *stack, Node* newNode)
 		stack -> bottom = newNode;
 	}
 }
+
+char* infix2postfix(char * infix)
+{
+	char *postfix    = (char *) malloc(sizeof(char)*strlen(infix));
+	int  i;
+	int  j    = 0;
+	char oper = 0;
+
+	Stack* opstack    = makeStack();	
+	
+	for( i=0;i<strlen(infix);i++)
+	{
+		if(infix[i] == '+' || infix[i] == '-' || 
+		   infix[i] == '/' || infix[i] == '*' )
+		{	
+			//printf(" ");
+			postfix[j] = ' ';
+			push(opstack,makeNode(infix[i]));
+			j++;
+		}
+		else if( infix[i] == ')')
+		{
+			oper = pop(opstack)->data;
+			//printf("%c",oper);
+			postfix[j] = ' ';
+			postfix[j+1] = oper;
+			j+=2;
+		}
+		else if( infix[i] != '(')
+		{
+			//printf("%c",infix[i]);
+			postfix[j] = infix[i];
+			j++;
+		}
+	}
+	return(postfix);
+}
+
+
+
 
