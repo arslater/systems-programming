@@ -14,6 +14,6 @@ struct node
 
 typedef struct node Node;
 
-Node *makeNode(char); // create new node containing data
-
+Node *makeNode(char); 		// create new node containing data
+void addRightChild(Node*,Node*);	// create right child node
 #endif

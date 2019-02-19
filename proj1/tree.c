@@ -10,3 +10,9 @@ Node *makeNode(char data)
 
 	return newNode;
 }
+void addRightChild(Node *root, Node *rightNode)
+{
+	rightNode -> parent     = root;
+	root      -> rightChild = rightNode;
+}
+

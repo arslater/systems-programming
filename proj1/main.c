@@ -3,9 +3,12 @@
 
 int main()
 {
-	Node* myNode = makeNode('7');
+	Node* pNode = makeNode('P');
+	Node* rchld = makeNode('R');
 
-	printf("MY NODE HAS A VALUE OF %c\n", myNode -> data);
+	addRightChild(pNode,rchld);
+
+	printf("MY NODE HAS A VALUE OF %c\n", rchld ->data);
 
 	return 0;
 }
