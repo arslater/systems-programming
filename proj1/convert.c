@@ -1,6 +1,6 @@
 //#include "convert.h"
 #include "stdio.h"
-#include "tree.h"
+#include "data.h"
 #include "stdlib.h"
 
 Stack* makeStack()
@@ -45,43 +45,85 @@ void push(Stack *stack, Node* newNode)
 	}
 }
 
-char* infix2postfix(char * infix)
+Stack *infix2postfix(char * infix)
 {
-	char *postfix    = (char *) malloc(sizeof(char)*strlen(infix));
-	int  i;
-	int  j    = 0;
-	char oper = 0;
+	int j = 0;
+	int i;
+	int k = 0;
+	int l = 0;
+	char **operands = (char **) malloc(sizeof(char *)*100);
+	// TODO: MAKE THIS A SMART/DYNAMIC MEMORY ALLOCATION
+	operands[0] = (char *) malloc(sizeof(char)*16);
 
-	Stack* opstack    = makeStack();	
-	
+	char **operator = (char **) malloc(sizeof(char*)*64);
+    operator[l] = (char *) malloc(sizeof(char)*16); 
+
+	Stack *opstack = makeStack();
+	Stack *restack = makeStack();
+
 	for( i=0;i<strlen(infix);i++)
 	{
 		if(infix[i] == '+' || infix[i] == '-' || 
 		   infix[i] == '/' || infix[i] == '*' )
-		{	
-			//printf(" ");
-			postfix[j] = ' ';
-			push(opstack,makeNode(infix[i]));
-			j++;
+		{
+			// encountered an operator
+			operator[l][0] = infix[i];
+
+			push(opstack,makeNode(operator[l]));
+			l++;
+			operator[l] = (char *) malloc(sizeof(char)*16); 
+
+			if (operands[j][0] != -1)
+			{
+				push(restack,makeNode((operands[j])));	
+				j++;
+				k=0;
+			
+				operands[j] = (char *) malloc(sizeof(char)*16);
+				// TODO: Change this to operand limit
+
+				operands[j][0] = -1;
+			}			
 		}
 		else if( infix[i] == ')')
 		{
-			oper = pop(opstack)->data;
-			//printf("%c",oper);
-			postfix[j] = ' ';
-			postfix[j+1] = oper;
-			j+=2;
+			if ( operands[j][0] != -1)
+			{
+				push(restack,makeNode(operands[j]));
+
+				j++;		
+				operands[j] = (char *) malloc(sizeof(char)*16);
+				// TODO: Change this to operand limit
+				k=0;
+				operands[j][0] = -1;
+			}
+			push(restack,pop(opstack));
 		}
 		else if( infix[i] != '(')
 		{
-			//printf("%c",infix[i]);
-			postfix[j] = infix[i];
-			j++;
-		}
+			// Encountering the operands	
+			operands[j][k] = infix[i];
+			k++;
+		}		
 	}
-	return(postfix);
+	return(restack);
 }
 
-
+char * stack2string(Stack* expression, int length)
+{
+	Node *tmp;
+	int  i    = 0;
+	char *returnString = (char *)malloc(sizeof(char)*length);
+	;
+	for(tmp = expression -> bottom; tmp != NULL; tmp = tmp -> next)
+	{	
+		strcat(returnString,tmp -> data);
+		strcat(returnString," ");
+		i+=2;
+	}
+		
+	printf("\n");
+	return(returnString);
+}
 
 
