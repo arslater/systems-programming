@@ -48,33 +48,56 @@ void addChild(Node *parent, Node* newNode,Stack* operandStack)
 }
 Tree *buildTree(Stack *pfStack)
 {
-	//Stack * operandStack = makeStack();
 	Tree *tree = makeTree();
-	Node *root = pop(pfStack);
+	Node *root;
+	Stack * opStack = makeStack();
 	tree ->root = root;
 	Node *tmp;
-
-	//printf("%s##\n", tree->root->data);
-//	printf("%s^^\n", pfStack ->top ->data);
-	for(tmp = root; tmp != pfStack ->bottom; tmp=pop(pfStack))
+	Node *tmp1;
+	
+	for(tmp = pop(pfStack); tmp != NULL; tmp=pop(pfStack))
 	{
-	//	printf(">%s\n", tmp ->data);
-		addChild(tmp, pfStack->top,pfStack);
-		if( pfStack ->top ->back != NULL)
-			addChild(tmp,pfStack->top->back,pfStack);
+		printf("%s|", tmp -> data);	
+		if( isOperator(tmp ->data))
+		{
+			// Operator, need to get two values
+			printf("Oprator: %s\n",tmp ->data);
+
+			tmp ->leftChild = pop(opStack);
+			tmp ->rightChild= pop(opStack);
+
+			push(opStack,tmp);
+		}
+		else
+		{
+			// Operand
+			printf("Operand: %s\n",tmp ->data);
+
+			push(opStack,tmp);
+		}
 	}
+	tree -> root = opStack-> top;
 	return(tree);
 }
-void printTree(Tree *expTree)
+bool isOperator(char *string)
 {
-	Node *tmp = expTree -> root;
-	printf("%s ",tmp ->data);
+	bool comparison = false;
 
-	while(tmp ->leftChild != NULL)
+	if( (strcmp("+",string)==0) || (strcmp("-",string)==0)||
+	    (strcmp("/",string)==0) || (strcmp("*",string)==0) )
+		comparison = true;
+
+	return(comparison);
+}
+void printTree(Node *root)
+{
+	Node *tmp = root;
+	
+	if(tmp != NULL)
 	{
-		//printf("%s ", tmp -> data);
-		printf("%s ", tmp -> leftChild -> data);
-		printf("%s ", tmp -> rightChild ->data);
-		tmp = tmp ->rightChild;
+		printTree(tmp ->leftChild);
+		printTree(tmp ->rightChild);
+
+		printf("%s ",tmp -> data);
 	}
 }

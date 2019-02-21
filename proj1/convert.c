@@ -32,6 +32,10 @@ void push(Stack *stack, Node* newNode)
 	if (stack ->top != NULL)
 	{
 		// Unempty stack
+
+		// Comaptibility with tree
+		newNode -> above = stack -> top;
+
 		stack   -> top -> next = newNode;
 		newNode -> back        = stack -> top;
 
@@ -114,8 +118,8 @@ char * stack2string(Stack* expression, int length)
 	Node *tmp;
 	int  i    = 0;
 	char *returnString = (char *)malloc(sizeof(char)*length);
-	;
-	for(tmp = expression -> bottom; tmp != NULL; tmp = tmp -> next)
+
+	for(tmp = expression -> top; tmp != NULL; tmp = tmp -> back)
 	{	
 		strcat(returnString,tmp -> data);
 		strcat(returnString," ");
@@ -125,5 +129,39 @@ char * stack2string(Stack* expression, int length)
 	printf("\n");
 	return(returnString);
 }
+Stack * reverseStack(Stack* stack)
+{
+	Node * tmp;
+	Node * tmp1;
+	Stack *newStack = makeStack();
+	
+	for(tmp = stack -> top; tmp != NULL; tmp = stack->top)
+		push(newStack,pop(stack));
 
+	return(newStack);
+}
+int evaluate(Node *root)
+{
+	int left  = 0;
+	int right = 0;
 
+	if(root != NULL)
+	{
+		if( !isOperator(root->data))
+			return(atoi(root ->data));
+		else
+		{
+			left  = evaluate(root->leftChild);
+			right = evaluate(root->rightChild);
+		
+			if      (strcmp("+",root->data) == 0)
+				return(left+right);
+			else if (strcmp("-",root->data)==0)
+				return(left-right);
+			else if (strcmp("/",root->data)==0)
+				return(left/right);
+			else if(strcmp("*",root->data)==0)
+				return(left*right);
+		}
+	}
+}

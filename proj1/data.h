@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 // TODO: Rename this to something more appropriate --
 //		 BC right now it;s storing BOTH data structures
 
@@ -38,14 +39,16 @@ struct tree
 };
 typedef struct tree Tree;
 
+int evaluate(Node *);
 Tree * makeTree();
 void addChild(Node*,Node*,Stack*);
-void printTree(Tree*);
+void printTree(Node*);
 Tree *buildTree(Stack*);
-
+bool isOperator(char*);
 Node *pop(Stack*);
 void push(Stack*,Node*);
 Stack* makeStack();
+Stack *reverseStack(Stack*);
 Stack* infix2postfix(char *);	// converts an infix string to a postfix string
 char*   stack2string(Stack *,int);
 
