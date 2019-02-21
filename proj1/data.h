@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdbool.h>
 
+extern int OPERAND;
 
 ///////////////////////////////////////////////////
 // Node structure Used by The stack and the tree
@@ -37,10 +38,10 @@ typedef struct stack Stack;
 
 // Stack manipulation functions
 Stack *makeStack();				 // allocates memory for a new stack
-Stack *reverseStack(Stack*);	 // reverses order for the stack
-char  *stack2string(Stack *,int);// (for debugging) stack -> string
 Node  *pop(Stack*);				 // Returns the popped Node
 void   push(Stack*,Node*);		 // Pushesa new node to the stack
+char  *stack2string(Stack *,int);// (for debugging) stack -> string
+Stack *reverseStack(Stack*);	 // reverses order for the stack
 
 //////////////////////////////////////////////////
 // Basic Tree
@@ -55,8 +56,8 @@ Tree *makeTree();			// allocates memory for a new Tree
 Tree *buildTree(Stack*);	/* builds an Exression Tree from a 
 							    postfix stack.               */
 
-/////////////////////////////////////
-// Utility and Evaluation Functions
+/////////////////////////////////////////////////////////
+// Utility and Evaluation Functions (found in process.c)
 //
 double  evaluate(Node *);	 /* Takes a root node of a valid expression
 							     tree and returns the integer result of
@@ -69,5 +70,7 @@ Stack *infix2postfix(char *);/* Takes a VALID, parenthesized, string
                                  and converts it to a stack of the 
 								 expression in postfix form with NO
 								 parenthesis                         */
-								 
+void rmData(Tree *);		 /* Does the final memory freeing. Only frees the 
+								 tree, because the tree was made from popped Nodes
+								 from the stack						 */
 #endif
