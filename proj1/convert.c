@@ -34,7 +34,7 @@ void push(Stack *stack, Node* newNode)
 		// Unempty stack
 
 		// Comaptibility with tree
-		newNode -> above = stack -> top;
+		//newNode -> above = stack -> top;
 
 		stack   -> top -> next = newNode;
 		newNode -> back        = stack -> top;
@@ -140,15 +140,15 @@ Stack * reverseStack(Stack* stack)
 
 	return(newStack);
 }
-int evaluate(Node *root)
+double evaluate(Node *root)
 {
-	int left  = 0;
-	int right = 0;
+	double left  = 0;
+	double right = 0;
 
 	if(root != NULL)
 	{
 		if( !isOperator(root->data))
-			return(atoi(root ->data));
+			return(atof(root ->data));
 		else
 		{
 			left  = evaluate(root->leftChild);
@@ -157,9 +157,9 @@ int evaluate(Node *root)
 			if      (strcmp("+",root->data) == 0)
 				return(left+right);
 			else if (strcmp("-",root->data)==0)
-				return(left-right);
+				return(right-left);
 			else if (strcmp("/",root->data)==0)
-				return(left/right);
+				return(right/left);
 			else if(strcmp("*",root->data)==0)
 				return(left*right);
 		}

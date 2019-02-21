@@ -5,18 +5,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-// TODO: Rename this to something more appropriate --
-//		 BC right now it;s storing BOTH data structures
 
-// TODO: Think of how to handle OPERAND vs OPERATOR data section
-//       Maybe make a bitmask to show which one it is?
 
-//extern FILE* INPUT;
-
+///////////////////////////////////////////////////
+// Node structure Used by The stack and the tree
+// Only the tree uses the '*child' elements
+//
 struct node
 {
 	char * data;
-	struct node *above;
 	struct node *leftChild;
 	struct node *rightChild;
 
@@ -26,32 +23,51 @@ struct node
 };
 typedef struct node Node;
 
-struct stack	// cobbling together a stack
+// Node manipulation functions
+Node *makeNode(char *); 		// create new node containing a string
+
+///////////////////////////////////////////////
+// Basic stack structure 
+struct stack	
 {
 	Node *bottom;
 	Node *top;
 };
 typedef struct stack Stack;
 
+// Stack manipulation functions
+Stack *makeStack();				 // allocates memory for a new stack
+Stack *reverseStack(Stack*);	 // reverses order for the stack
+char  *stack2string(Stack *,int);// (for debugging) stack -> string
+Node  *pop(Stack*);				 // Returns the popped Node
+void   push(Stack*,Node*);		 // Pushesa new node to the stack
+
+//////////////////////////////////////////////////
+// Basic Tree
 struct tree
 {
 	Node * root;
 };
 typedef struct tree Tree;
 
-int evaluate(Node *);
-Tree * makeTree();
-void addChild(Node*,Node*,Stack*);
-void printTree(Node*);
-Tree *buildTree(Stack*);
-bool isOperator(char*);
-Node *pop(Stack*);
-void push(Stack*,Node*);
-Stack* makeStack();
-Stack *reverseStack(Stack*);
-Stack* infix2postfix(char *);	// converts an infix string to a postfix string
-char*   stack2string(Stack *,int);
+// Tree manipulation functions
+Tree *makeTree();			// allocates memory for a new Tree
+Tree *buildTree(Stack*);	/* builds an Exression Tree from a 
+							    postfix stack.               */
 
-Node *makeNode(char *); 		// create new node containing data
-
+/////////////////////////////////////
+// Utility and Evaluation Functions
+//
+double  evaluate(Node *);	 /* Takes a root node of a valid expression
+							     tree and returns the integer result of
+							     the evaluated expression tree        */
+void   printTree(Node*);	 // (for debugging) prints the tree
+bool   isOperator(char*);	 /* Utility function to determine if the 
+							     data string is an operator or not. If
+							     it is, then it returns true.         */
+Stack *infix2postfix(char *);/* Takes a VALID, parenthesized, string
+                                 and converts it to a stack of the 
+								 expression in postfix form with NO
+								 parenthesis                         */
+								 
 #endif
