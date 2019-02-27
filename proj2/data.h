@@ -14,9 +14,13 @@ extern int OPERAND;
 //
 struct node
 {
+	// TODO: Consider making a new Node struct..?
+	// Used only for the input Stack
 	char * data;
-	struct node *leftChild;
-	struct node *rightChild;
+
+	// Used for the parsing stuff...?
+	int value;
+	int address;
 
 	//Below are only used for the stack
 	struct node *next;
@@ -43,34 +47,5 @@ void   push(Stack*,Node*);		 // Pushesa new node to the stack
 char  *stack2string(Stack *,int);// (for debugging) stack -> string
 Stack *reverseStack(Stack*);	 // reverses order for the stack
 
-//////////////////////////////////////////////////
-// Basic Tree
-struct tree
-{
-	Node * root;
-};
-typedef struct tree Tree;
 
-// Tree manipulation functions
-Tree *makeTree();			// allocates memory for a new Tree
-Tree *buildTree(Stack*);	/* builds an Exression Tree from a 
-							    postfix stack.               */
-
-/////////////////////////////////////////////////////////
-// Utility and Evaluation Functions (found in process.c)
-//
-double  evaluate(Node *);	 /* Takes a root node of a valid expression
-							     tree and returns the integer result of
-							     the evaluated expression tree        */
-void   printTree(Node*);	 // (for debugging) prints the tree
-bool   isOperator(char*);	 /* Utility function to determine if the 
-							     data string is an operator or not. If
-							     it is, then it returns true.         */
-Stack *infix2postfix(char *);/* Takes a VALID, parenthesized, string
-                                 and converts it to a stack of the 
-								 expression in postfix form with NO
-								 parenthesis                         */
-void rmData(Tree *);		 /* Does the final memory freeing. Only frees the 
-								 tree, because the tree was made from popped Nodes
-								 from the stack						 */
 #endif

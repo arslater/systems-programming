@@ -11,8 +11,8 @@ Node *makeNode(char * data)
 	Node* newNode = (Node*)malloc(sizeof(Node));
 	newNode -> data = data;
 
-	newNode -> leftChild = NULL;
-	newNode -> rightChild= NULL;
+	newNode -> value = 0;
+	newNode -> address = 0;
 	
 	// stack elements
 	newNode -> next = NULL;
@@ -21,13 +21,6 @@ Node *makeNode(char * data)
 	return newNode;
 }
 
-Tree *makeTree()
-{
-	Tree *tree = (Tree *) malloc(sizeof(Tree));
-	tree -> root = NULL;
-
-	return tree;
-}
 ////////////////////////////////////////////////
 // Implementations of Stack Manipulation Functions(s)
 //
@@ -101,48 +94,3 @@ Stack * reverseStack(Stack* stack)
 	return(newStack);
 }
 
-////////////////////////////////////////////////
-// Implementations of Tree Manipulation Functions(s)
-//
-Tree *buildTree(Stack *pfStack) 
-{	
-	Tree *tree = makeTree();	
-	Stack * opStack = makeStack();	
-	Node *tmp;
-	
-	for(tmp = pop(pfStack); tmp != NULL; tmp=pop(pfStack))
-	{	
-		if( isOperator(tmp ->data))
-		{
-			// Operator, need to get its children
-			tmp ->leftChild = pop(opStack);
-			tmp ->rightChild= pop(opStack);
-
-			push(opStack,tmp); // push this subtree on the stack
-		}
-		else
-		{
-			// Operand, just push onto the stack
-			push(opStack,tmp);
-		}
-	}
-	tree -> root = opStack-> top;
-	/* the only remaining node in the stack will represent the root 
-	   node of the tree, because it is the result of merging all of
-	   the other operations                                    
-	*/
-	return(tree);
-}
-
-void printTree(Node *root) // [Debugging] Prints tree from root
-{
-	Node *tmp = root;
-	
-	if(tmp != NULL)
-	{
-		printTree(tmp ->leftChild);
-		printTree(tmp ->rightChild);
-
-		printf("%s ",tmp -> data);
-	}
-}
