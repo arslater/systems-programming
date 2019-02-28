@@ -3,17 +3,19 @@
 #include<stdlib.h>
 #include<stdio.h>
 
+
 /////////////////////////////////////////////
 // Implementations of Node Manipulation Function(s)
 //
-Node *makeNode(char * data)
+Node *makeNode(char * name, int value)
 {
 	Node* newNode = (Node*)malloc(sizeof(Node));
-	newNode -> data = data;
+	newNode -> data = NULL;
 
-	newNode -> value = 0;
+	newNode -> value = value;
 	newNode -> address = 0;
-	
+	newNode -> name  = name;
+
 	// stack elements
 	newNode -> next = NULL;
 	newNode -> back = NULL;
@@ -82,15 +84,3 @@ char * stack2string(Stack* expression, int length)// [debugging]
 	printf("\n");
 	return(returnString);
 }
-Stack * reverseStack(Stack* stack)
-{
-	Node * tmp;
-	Node * tmp1;
-	Stack *newStack = makeStack();
-	
-	for(tmp = stack -> top; tmp != NULL; tmp = stack->top)
-		push(newStack,pop(stack));
-
-	return(newStack);
-}
-

@@ -1,48 +1,129 @@
 #include "data.h"
-#include "process.h"
+//#include "process.h"
 
 // TODO: Call the functions from within these if statemetns
-int instructionType(char *line)
+void doInstruction(char *line, Stack *runStack)
 {
 	int ITYPE = 0; 	// 0 MEANS ITS AN ARITHMETIC/whatever 
+	char *argument = (char *) malloc(sizeof(char)*strlen(line));
+	int i        = 0;
 
-	printf("No problem here '%s'\n",line);
-	if( (strstr(line,"show")) != NULL)
+	if ( line != 0 )
 	{
-//		printf("SHOW!!\n");
-		ITYPE = 1;
-		show(line);
-		// TODO: MAKE EACH INSTRUCTION TYPE CORRESPOND TO A BINARY MASK!!!
-	}
-	else if ((strstr(line,"print")) != NULL)
-	{
-//		printf("PRINT!!\n");
-		ITYPE  = 2;
-	}
-	else if ((strstr(line,"halt")) != NULL)
-	{
-//		printf("HALT\n");
-		ITYPE =3;
-	}
-	else if((strstr(line,"pop")) != NULL)
-	{
-//		printf("POP!\n");
-		ITYPE = 4;
-	}
 
-	return ITYPE;
+		if ( line[0] == '+')
+			push(runStack, makeNode( NULL, runStack -> top ->value 
+			+ runStack -> top ->back ->value));
+
+		else if ( line[0] == '|')
+			push(runStack, makeNode( NULL, runStack -> top ->value 
+			| runStack -> top ->back ->value));
+		
+		else if ( line[0] == '-')
+		{
+
+			push(runStack, makeNode( NULL, runStack -> top ->back->value 
+			- runStack -> top ->value));
+		}
+		else if ( line[0] == '*')
+			push(runStack, makeNode( NULL, runStack -> top ->value 
+			* runStack -> top ->back ->value));
+		
+		else if ( line[0] == '/')
+			push(runStack, makeNode( NULL, runStack -> top -> back->value 
+			/ runStack -> top ->value));
+		
+		else if ( line[0] == 'd')
+			push(runStack, makeNode( NULL, runStack -> top ->back ->value 
+			% runStack -> top ->value));
+	
+		else if ( line[0] == '!')
+			push(runStack, makeNode( NULL, runStack -> top ->back ->value 
+			^ runStack -> top ->value));
+		
+		else if ( line[0] == '&')
+			push(runStack, makeNode( NULL, runStack -> top ->back ->value 
+			& runStack -> top ->value));
+	
+		else if ( line[0] == '=')
+		{
+			if( (runStack -> top -> value)-1 == runStack -> top -> back -> value)
+					push(runStack,makeNode(NULL,0));
+			else
+					push(runStack,makeNode(NULL,1));
+	    }	
+		else if ( line[0] == '<')
+		{
+			//printf("%d ? %d\n", runStack -> top ->value, runStack -> top ->value-1);
+			switch (line[1])
+			{
+				case '>':
+					if( runStack -> top -> value == runStack -> top -> back -> value)
+						push(runStack,makeNode(NULL,0));
+					else
+						push(runStack,makeNode(NULL,1));
+					break;
+				case '=':
+					if( (runStack -> top -> value)-1 <= runStack -> top -> value)
+						push(runStack,makeNode(NULL,1));
+					else
+						push(runStack,makeNode(NULL,0));
+					break;
+				default:
+				//	printf("******\n");
+					if( (runStack -> top -> value)-1 > runStack -> top -> value)
+						push(runStack,makeNode(NULL,0));
+					else
+						push(runStack,makeNode(NULL,1));
+					break;
+			}
+		}
+		else if ( line[0] == '>')
+		{
+			//printf("%d ? %d\n", runStack -> top ->value, runStack -> top ->value-1);
+			switch (line[1])
+			{
+				case '=':
+					if( (runStack -> top -> value)-1 >= runStack -> top -> value)
+						push(runStack,makeNode(NULL,1));
+					else
+						push(runStack,makeNode(NULL,0));
+					break;
+				
+				default:
+					if( (runStack -> top -> value)-1 < runStack -> top -> value)
+						push(runStack,makeNode(NULL,0));
+					else
+						push(runStack,makeNode(NULL,1));
+					break;
+			}
+		}
+		else if ( line[0] == 'd')
+			push(runStack, makeNode( NULL, runStack -> top ->back ->value 
+			% runStack -> top ->value));
+
+		else
+		{
+			while(line[i] != ' ')
+				i++;
+
+			argument = &(line[i+1]);
+
+			 if( (strstr(line,"show")) != NULL)
+				fprintf(FP,"%s\n",argument);
+
+			else if ((strstr(line,"print")) != NULL)
+				fprintf(FP,"%d\n",runStack->top->value);
+		
+			else if((strstr(line,"pop")) != NULL)
+				pop(runStack);
+
+			else if((strstr(line,"push")) != NULL)
+				push(runStack,makeNode(NULL,atoi(argument)));
+			
+			else if((strstr(line,"rvalue")) != NULL)
+				push(runStack,makeNode(argument,0));
+		}
+		
+	}
 }
-
-void show(char *string)
-{
-	// Just want to print everything after 'show '
-	char *showString = (char *)malloc(sizeof(char)*strlen(string)-5);
-	int i =0;
-
-	while(string[i] != ' ')
-		i++;
-
-	showString = &(string[i+1]); // making a new array after the space after show
-	printf("%s\n",showString);
-}
-

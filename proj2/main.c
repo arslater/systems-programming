@@ -1,9 +1,14 @@
 #include"data.h"
-#include"process.h"
+
+FILE *FP = NULL;
+
 int main(int argc, char **argv)
 {
 	FILE *fp;
-	
+	FP = stdout;
+	// For debugging/ smarter code. Change to not STDOUT when going to a file
+
+
 	if( (fp = fopen(argv[1], "r")) == NULL)
 	{
 		fprintf(stderr, "Error opening '%s' for reading. Exiting.\n",argv[1]);
@@ -11,6 +16,7 @@ int main(int argc, char **argv)
 	}
 
 	Stack *inputStack = makeStack();
+	Stack *workingStack = makeStack();
 	char  **readLine  = (char **) malloc(sizeof(char*)*500);;
 	int     i         = 0;
 	
@@ -21,15 +27,15 @@ int main(int argc, char **argv)
 
 		fgets(readLine[i], 200,fp);
 		readLine[i] = strtok(readLine[i], "\n"); // no newline chars
-		push(inputStack,makeNode(readLine[i]));
+		push(inputStack,makeNode(readLine[i],0));
 		i++;
 	}
 	pop(inputStack);// getting rid of empty string
 	//printf("%s\n", stack2string(reverseStack(inputStack), 200));
 	Node * tmp = inputStack -> bottom;
-	while(tmp != inputStack -> top -> next)
+	while(strstr(tmp ->name,"halt") == NULL  )
 	{	
-		instructionType(tmp ->data);
+		doInstruction(tmp ->name,workingStack);
 		tmp = tmp -> next;
 	}
 
