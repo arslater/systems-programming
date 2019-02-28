@@ -1,2 +1,2 @@
-eval: data.c process.c main.c
-	gcc -o eval data.c process.c main.c -g
+eval: data.c doInstruction.c main.c
+	gcc -o eval data.c doInstruction.c main.c -g

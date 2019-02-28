@@ -1,19 +1,23 @@
-#include<stdio.h>
-#include"data.h"
-#include<stdlib.h>
-#include<stdio.h>
+////////////////////////////////////////////////////
+// Anita Slater
+// CSI 402: Systems Programming - proj2
+// 2/28/2019
+//
+// data.c: Contains the implementations of the data
+//		   structure manipulation functions.
 
+#include"data.h"
 
 /////////////////////////////////////////////
 // Implementations of Node Manipulation Function(s)
 //
 Node *makeNode(char * name, int value)
 {
+	// initialize a node with a given nariable name (NULL
+	// if it's just an integer) and value.
 	Node* newNode = (Node*)malloc(sizeof(Node));
-	newNode -> data = NULL;
 
 	newNode -> value = value;
-	newNode -> address = 0;
 	newNode -> name  = name;
 
 	// stack elements
@@ -67,20 +71,4 @@ void push(Stack *stack, Node* newNode)
 		stack -> top    = newNode; /* top and bottom become */
 		stack -> bottom = newNode; /* the new/only node     */
 	}
-}
-char * stack2string(Stack* expression, int length)// [debugging]
-{
-	Node *tmp;
-	int  i    = 0;
-	char *returnString = (char *)malloc(sizeof(char)*length);
-
-	for(tmp = expression -> top; tmp != NULL; tmp = tmp -> back)
-	{	
-		strcat(returnString,tmp -> data);
-		strcat(returnString," ");
-		i+=2;
-	}
-		
-	printf("\n");
-	return(returnString);
 }

@@ -38,12 +38,19 @@ int main(int argc, char **argv)
 		exit(2);
 	}
 
-//	FP = stdout; //uncomment to print to the console
+	FP = stdout; //uncomment to print to the console
 
-	while(strstr(tmp ->name,"halt") == NULL  )
-	{	
-		doInstruction(tmp ->name,workingStack);
-		tmp = tmp -> next;
+	while( tmp != NULL)
+	{
+		if( tmp -> name != 0)
+		{
+			///////////////////////////////////
+			// Ignore empty strings & stop of we get the 'halt' command
+			if (strcmp(tmp ->name,"halt") == 0)
+				break;
+			doInstruction(tmp ->name,workingStack);
+		}
+		tmp = tmp ->next;	
 	}
 
 	free(inputStack);
