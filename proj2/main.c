@@ -5,10 +5,7 @@ FILE *FP = NULL;
 int main(int argc, char **argv)
 {
 	FILE *fp;
-	FP = stdout;
-	// For debugging/ smarter code. Change to not STDOUT when going to a file
-
-
+	
 	if( (fp = fopen(argv[1], "r")) == NULL)
 	{
 		fprintf(stderr, "Error opening '%s' for reading. Exiting.\n",argv[1]);
@@ -19,7 +16,8 @@ int main(int argc, char **argv)
 	Stack *workingStack = makeStack();
 	char  **readLine  = (char **) malloc(sizeof(char*)*500);;
 	int     i         = 0;
-	
+	char  *outfile    = strcat(strtok(argv[1],"."),".out");
+
 	while( !feof(fp))
 	{
 		readLine[i] = (char *)malloc(sizeof(char)*200); 
@@ -31,8 +29,17 @@ int main(int argc, char **argv)
 		i++;
 	}
 	pop(inputStack);// getting rid of empty string
-	//printf("%s\n", stack2string(reverseStack(inputStack), 200));
+
 	Node * tmp = inputStack -> bottom;
+	
+	if ( (FP = fopen(outfile,"w")) == NULL)
+	{
+		fprintf(stderr,"Error opening '%s' for writing. Exiting\n",outfile);
+		exit(2);
+	}
+
+//	FP = stdout; //uncomment to print to the console
+
 	while(strstr(tmp ->name,"halt") == NULL  )
 	{	
 		doInstruction(tmp ->name,workingStack);
@@ -42,5 +49,6 @@ int main(int argc, char **argv)
 	free(inputStack);
 	free(*readLine);
 	fclose(fp);	// TODO: think of a way to close file sooner
+	fclose(FP);
 return 0;
 }
