@@ -4,4 +4,5 @@
 int instructionType(char *);
 // TODO: be fancy and make this a cutsom type with a bit mask
 
+void show(char *);
 #endif
