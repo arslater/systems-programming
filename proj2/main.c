@@ -1,4 +1,5 @@
 #include"data.h"
+#include "process.h"
 
 FILE *FP = NULL;
 
@@ -20,8 +21,7 @@ int main(int argc, char **argv)
 
 	while( !feof(fp))
 	{
-		readLine[i] = (char *)malloc(sizeof(char)*200); 
-		// TODO: MAKE THIS A SMARTER ALLOCATION
+		readLine[i] = (char *)malloc(sizeof(char)*200); 	
 
 		fgets(readLine[i], 200,fp);
 		readLine[i] = strtok(readLine[i], "\n"); // no newline chars
@@ -38,24 +38,24 @@ int main(int argc, char **argv)
 		exit(2);
 	}
 
-	FP = stdout; //uncomment to print to the console
+//	FP = stdout; //uncomment to print to the console
 
 	while( tmp != NULL)
 	{
 		if( tmp -> name != 0)
 		{
 			///////////////////////////////////
-			// Ignore empty strings & stop of we get the 'halt' command
+			// Ignore empty strings & stop if we get the 'halt' command
 			if (strcmp(tmp ->name,"halt") == 0)
 				break;
-			doInstruction(tmp ->name,workingStack);
+			switchInstruction(tmp ->name,workingStack);
 		}
 		tmp = tmp ->next;	
 	}
 
 	free(inputStack);
 	free(*readLine);
-	fclose(fp);	// TODO: think of a way to close file sooner
+	fclose(fp);	
 	fclose(FP);
 return 0;
 }
