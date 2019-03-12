@@ -72,3 +72,24 @@ void push(Stack *stack, Node* newNode)
 		stack -> bottom = newNode; /* the new/only node     */
 	}
 }
+char * stack2string(Stack* expression, int length)// [debugging]
+{
+	Node *tmp;
+	int  i    = 0;
+	char *returnString = (char *)malloc(sizeof(char)*length);
+
+	for(tmp = expression -> top; tmp != NULL; tmp = tmp -> back)
+	{	
+		/*
+		strcat(returnString,tmp -> name);
+		strcat(returnString,":");
+		sprintf(returnString,"%d",tmp -> value);
+		strcat(returnString,"|");
+		sprintf(returnString,"%d", tmp -> address);
+		strcat(returnString," ");
+		i+=2;
+		*/
+		printf("|%s=%d(0x%d) |", tmp -> name,tmp->value,tmp->address);
+	}
+	return(returnString);
+}

@@ -1,120 +1,6 @@
 #include "data.h"
 #include "process.h"
 
-void  doLogclOprn(char *line,Stack *scope)
-{
-	int oper1 = (pop(scope))->value;
-	int oper2 = 0;
-	if( scope -> top != NULL)
-		oper2 = (pop(scope))->value;
-
-	if( line[0] == '!' )
-		push(scope,makeNode(NULL,bang(oper1)));
-	else if(line[0] == '&')
-		push(scope,makeNode(NULL,ampr(oper1,oper2)));
- 	else if(line[0] == '|')
-		push(scope,makeNode(NULL,pipe(oper1,oper2)));
-
-}
-void  doRelatOprn(char *line,Stack* scope)
-{
-	int oper1 = pop(scope) -> value;
-	int oper2 = pop(scope) -> value;
-
-	if(line[0] == '=')
-		neq(oper1,oper2);
-	else if(line[0] == '<')
-	{
-		switch(line[1])
-		{
-			case '>':
-				push(scope,makeNode(NULL,equ(oper1,oper2)));
-				break;
-			case '=':
-				push(scope,makeNode(NULL,leq(oper1,oper2)));
-				break;
-			default:
-				push(scope,makeNode(NULL,lt(oper1,oper2)));
-				break;
-		}
-	}
-	else if(line[0] == '>')
-	{
-		switch(line[1])
-		{
-			case '=':
-				push(scope,makeNode(NULL,geq(oper1,oper2)));
-			default:
-				push(scope,makeNode(NULL,gt(oper1,oper2)));
-		}
-	}
-}
-void  doArthmOprn(char *line,Stack* scope)
-{
-	int oper1 = pop(scope)->value;
-	int oper2 = pop(scope)->value;
-
-	if( line[0] == '+' )
-		push(scope,makeNode(NULL,sum(oper1,oper2)));
-	else if(line[0] == '-')
-		push(scope,makeNode(NULL,sub(oper1,oper2)));
-	else if(line[0] == '*')
-		push(scope,makeNode(NULL,mul(oper1,oper2)));
-	else if( line[0] == '/')
-		push(scope,makeNode(NULL,divi(oper1,oper2)));
-	else if(line[0] == 'd')
-		push(scope,makeNode(NULL,mod(oper1,oper2)));
-}
-void  doStackOprn(char *line,Stack *scope)
-{
-
-	if (strstr(line,"pop") != NULL)
-		pop(scope);
-	else if(strstr(line,"push") != NULL)
-	{
-		int i = 0;
-		while( line[i] != ' ')
-			i++;
-			
-		doPush(scope,atoi(&(line[i+1])),line);
-	}
-	else if(strstr(line,"rvalue") != NULL)
-		rvalue(line, scope);
-	else if(strstr(line,"lvalue") != NULL)
-		lvalue(line,scope);
-	else if(line[0] == ':' && line[1] == '=')
-		eval(scope);
-}
-void  doOutput(char *line,Stack* scope)
-{
-	char * argument = (char *) malloc(sizeof(char)*strlen(line));
-	int i           = 0;
-
-	while(line[i] != ' ')
-		i++;
-
-	argument = &(line[i+1]);
-
-
-	if( strcmp(argument, "show")== 0)
-		argument = "\n";
-	
-	if( (strstr(line,"show")) != NULL)
-		fprintf(FP,"%s\n", argument);
-	else
-		fprintf(FP,"%d\n",scope ->top -> value);
-}
-void doPush(Stack* scope, int value, char *name)
-{
-	/////////////////////////////////////
-	// Push to the stack
-	
-	push(scope,makeNode(name, value));	
-	if ( scope -> top -> back != NULL)
-		scope -> top -> address = scope -> top -> back -> address+1;
-	else
-		scope -> top -> address = 0;
-}
 int sum(int oper1,int oper2) {
 	return(oper1+oper2);}
 int sub(int oper1,int oper2) {
@@ -137,16 +23,21 @@ void rvalue(char* line, Stack* scope)
 	int   value = 0;
 	char *name = getArgument(line);
 
+	int address = 0;
+
+	if( scope -> top != NULL)
+		address = scope -> top -> address;
+
 	if( (tmp = inStack(line,scope)) != NULL)
 	{
 		// A variable of the same name is in the stack
 		// Push it's contents onto the stack
-		doPush(scope, tmp -> value, tmp ->name);
+		doPush(scope, tmp -> value, tmp ->name, tmp ->address);
 	}
 	else
 	{
 		// Not in the stack already, make a new node
-		doPush(scope,0,name);
+		doPush(scope,0,name, address);
 	}
 }
 
@@ -158,16 +49,22 @@ void lvalue(char *line, Stack* scope)
 	char * name = getArgument(line);
 	Node * tmp;
 
+	int address = 0;
+
+	if( scope -> top != NULL)
+		address = scope -> top -> address;
+	
 	// does the variable exist in the current stack?
 	if( (tmp=inStack(line,scope)) != NULL)
 	{
 		// If it's already there, when pushing the new node on
 		// the stack, it will add 1 to it's address. Don't
 		// want to do that here, so compensating
-		doPush(scope,tmp -> address-1, tmp -> name); 
+		printf("^^ Variable %s is in the stack!\n", tmp ->name);
+		doPush(scope,tmp -> address, tmp -> name, tmp ->address); 
 	}
 	else
-		doPush(scope,0,name);
+		doPush(scope,0,name, address);
 
 }
 void eval(Stack * scope)
@@ -180,7 +77,7 @@ void eval(Stack * scope)
 	int   value = pop(scope) -> value;
 	char *name  = pop(scope) -> name;
 
-	doPush(scope,value,name);
+	doPush(scope,value,name, scope -> top -> address);
 }
 int equ(int oper1, int oper2){
 	return(!(oper1 == oper2));}
@@ -218,9 +115,41 @@ char *getArgument(char* line)
 	char * name = (char *) malloc(sizeof(char)*strlen(line));
 	int i       = 0;
 
-	while(line[i] != ' ')
+	while(line[i] != ' ' && line[i] != '\0')
 		i++;
 
 	name = &(line[i+1]);
+
+//	printf("@@%s@@\n",name);
+//	printf("^^^^%c%c%c%c%c%c%c^^^^^\n",line[0],line[1],line[2],line[3],line[4],line[5], line[6]);
 	return name;
+}
+char *getInstruction(char * line)
+{
+	int i =0;
+	char *instr = (char *) malloc(sizeof(char)*7); 
+	// size of longest instruction is 7
+
+	while(line[i] != ' ')
+		i++;
+
+	strcpy(instr, line);
+	instr[i] = '\0';
+
+	return(instr);
+}
+
+int getNextAddr(Stack * scope)
+{	
+	Node *tmp = scope -> bottom;
+	int max   = -1;
+
+	while(tmp != NULL)
+	{
+		if( tmp -> address > max)
+			max = tmp -> address;
+		tmp = tmp -> next;
+	}
+
+	return max;
 }

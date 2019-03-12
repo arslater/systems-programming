@@ -9,12 +9,14 @@ bool isLogclOprn(char *);
 bool isRelatOprn(char *);
 bool isArthmOprn(char *);
 bool isStackOprn(char *);
+bool isCntrlOprn(char *);
 bool isOutput(char *);
 
 void doLogclOprn(char *,Stack*);
 void doRelatOprn(char *,Stack*);
 void doArthmOprn(char *,Stack*);
 void doStackOprn(char *,Stack*);
+void doCntrlOprn(char *,Stack*);
 void doOutput(char *,Stack*);
 
 int sum(int,int);	// +
@@ -27,7 +29,7 @@ int bang(int);		// !
 int pipe(int,int);	// |
 int ampr(int,int);	// &
 
-void doPush(Stack*,int, char *);
+void doPush(Stack*,int, char *,int); // includes the address now
 void rvalue(char *, Stack*);
 void lvalue(char *, Stack*);
 void eval(Stack *);	// :=
@@ -39,7 +41,11 @@ int lt(int,int);
 int gt(int,int);
 int neq(int,int);
 
+void label(char *, Stack *);
+
 //utility functions
 Node *inStack(char *, Stack*);
 char *getArgument(char *);
+char *getInstruction(char*);
+int   getNextAddr(Stack*);
 #endif
