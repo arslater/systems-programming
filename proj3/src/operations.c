@@ -160,14 +160,27 @@ void lvalue(char *line, Stack* scope)
 
 	// does the variable exist in the current stack?
 	if( (tmp=inStack(line,scope)) != NULL)
-		doPush(scope,tmp -> address, tmp -> name); 
+	{
+		// If it's already there, when pushing the new node on
+		// the stack, it will add 1 to it's address. Don't
+		// want to do that here, so compensating
+		doPush(scope,tmp -> address-1, tmp -> name); 
+	}
 	else
 		doPush(scope,0,name);
 
 }
 void eval(Stack * scope)
 {
-	// in progress
+	// Assuming that this operator means to take the lvalue
+	// and set the top variable on the stack equal to its address
+
+	// TODO: safe to assume rvalue is always on top???
+
+	int   value = pop(scope) -> value;
+	char *name  = pop(scope) -> name;
+
+	doPush(scope,value,name);
 }
 int equ(int oper1, int oper2){
 	return(!(oper1 == oper2));}
@@ -184,7 +197,7 @@ int neq(int oper1,int oper2){
 
 Node* inStack(char* line, Stack* scope)
 {
-	Node * tmp   = scope -> bottom;
+	Node * tmp   = scope -> top; // want to get most recent value
 	Node * rNode = NULL;
 	char *var    = getArgument(line);
 
@@ -195,7 +208,7 @@ Node* inStack(char* line, Stack* scope)
 			rNode = tmp;
 			break;
 		}
-		tmp = tmp -> next;
+		tmp = tmp -> back;
 	}
 	return rNode;
 }
