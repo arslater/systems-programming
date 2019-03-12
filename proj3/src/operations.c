@@ -110,7 +110,10 @@ void doPush(Stack* scope, int value, char *name)
 	// Push to the stack
 	
 	push(scope,makeNode(name, value));	
-	scope -> top -> address = scope -> top -> back -> address+1;
+	if ( scope -> top -> back != NULL)
+		scope -> top -> address = scope -> top -> back -> address+1;
+	else
+		scope -> top -> address = 0;
 }
 int sum(int oper1,int oper2) {
 	return(oper1+oper2);}
