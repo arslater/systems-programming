@@ -192,7 +192,7 @@ void doPush(Stack* scope, int value, char *name, int address)
 	// Push to the stack
 
 	push(scope,makeNode(name, value));
-	if ( scope -> top -> back != NULL)
+	if( scope -> top -> back != NULL)
 		scope -> top -> address = address;
 	else
 		scope -> top -> address = 0;

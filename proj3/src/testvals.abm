@@ -1,0 +1,58 @@
+show =-=-=-=-=-=-=-=-=-=-=-=-=-=--
+show testing rvalue and l value
+show ------------------------------
+show initializing veriable i to zero
+rvalue i
+show i = 
+print
+show ...............................
+show
+show ................................
+show oh no i think my thing is getting consufed!
+show lvalue i = 0 ( it is at the 0th memory address)
+lvalue i
+print
+show ...............................
+show
+show ...............................
+show adding 3 more values
+push 1
+print
+push 2
+print
+push 3
+print
+show .................................
+show ..................................
+show Now the value of i should still be the same!!!
+show
+show i = ( should be 0 )
+lvalue i
+print
+show ...................................
+lvalue i
+push 5
+show ...................................
+show now I want to set i equal to 5
+show i = (should be 5)
+:=
+show :=
+print
+show ...................................
+show ...................................
+show i = (wants to see the value that i is equal to, should be 5)
+rvalue i
+rvalue i
+rvalue i
+print
+show ....................................
+show The value of i should still be 5
+show i = (should be 0) the same as it was initially
+lvalue i
+print
+show the rvalue is....
+rvalue i
+print
+show ....................................
+halt
+
