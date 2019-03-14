@@ -2,7 +2,8 @@
 #define PROCESS_H
 #include "data.h"
 
-void switchInstruction(char *, Stack*); // switches instruction to approp place
+void run(Node *,Stack *,Stack *);		// TODO: think of a neater way todo this
+void switchInstruction(char *, Stack*,Stack*); // switches instruction to approp place
 
 // Cleaning up logic
 bool isLogclOprn(char *);
@@ -16,7 +17,7 @@ void doLogclOprn(char *,Stack*);
 void doRelatOprn(char *,Stack*);
 void doArthmOprn(char *,Stack*);
 void doStackOprn(char *,Stack*);
-void doCntrlOprn(char *,Stack*);
+void doCntrlOprn(char *,Stack*,Stack *);
 void doOutput(char *,Stack*);
 
 int sum(int,int);	// +
@@ -42,6 +43,7 @@ int gt(int,int);
 int neq(int,int);
 
 void label(char *, Stack *);
+Node *got(char *, Stack*);		// goto is a keyword
 
 //utility functions
 Node *inStack(char *, Stack*);

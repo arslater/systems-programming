@@ -1,25 +1,32 @@
 #include "data.h"
 #include "process.h"
 
-void switchInstruction(char* line,Stack *scope)
+void run(Node *instruction,Stack *scope,Stack *inputStack)
 {
-	//char* instruction = getInstruction(line);
+	switchInstruction(instruction->name,scope, inputStack);
+	if(instruction -> next != NULL)
+		run(instruction -> next,scope,inputStack); // voluntary recursion?!?!?!
+}
 
-	if(isLogclOprn(getInstruction(line)))
-		doLogclOprn(line,scope);
-	else if(isRelatOprn(getInstruction(line)))
-		doRelatOprn(line,scope);
-	else if(isArthmOprn(getInstruction(line)))
-		doArthmOprn(line,scope);
-	else if(isStackOprn(getInstruction(line)))
-		doStackOprn(line,scope);
-	else if(isCntrlOprn(getInstruction(line)))
-		doCntrlOprn(line,scope);
-	else
+void switchInstruction(char* line,Stack *scope,Stack *inputStack)
+{
+	if( line != 0)
 	{
-		doOutput(line,scope);
+		if(isLogclOprn(getInstruction(line)))
+			doLogclOprn(line,scope);
+		else if(isRelatOprn(getInstruction(line)))
+			doRelatOprn(line,scope);
+		else if(isArthmOprn(getInstruction(line)))
+			doArthmOprn(line,scope);
+		else if(isStackOprn(getInstruction(line)))
+			doStackOprn(line,scope);
+		else if(isCntrlOprn(getInstruction(line)))
+			doCntrlOprn(line,scope, inputStack);
+		else
+		{
+			doOutput(line,scope);
+		}
 	}
-
 	//free(instruction);
 }
 bool isRelatOprn(char * line)
@@ -60,10 +67,12 @@ bool isStackOprn(char * line)
 bool isCntrlOprn(char * line)
 {
 	/////////////////////////////////
-	// label, goto
+	// label, goto, gotrue, gofalse, halt
 	//
 
-	return( (strcmp(line,"label") == 0) || (strcmp(line,"goto") ==0) );
+	return( (strcmp(line,"label") == 0) || (strcmp(line,"goto") ==0) 
+			|| (strcmp(line,"gofalse")==0) || (strcmp(line,"gotrue")==0)
+			||(strcmp(line,"halt")==0));
 }
 bool isOutput(char * line)
 {
@@ -158,9 +167,15 @@ void  doStackOprn(char *line,Stack *scope)
 	else if(line[0] == ':' && line[1] == '=')
 		eval(scope);
 }
-void  doCntrlOprn(char * line, Stack *scope)
+void  doCntrlOprn(char * line, Stack *scope, Stack *inputStack)
 {
-	//inprogress
+	////////////////////////////////////
+	// goto
+
+	if(strcmp(getInstruction(line),"goto") == 0)
+		run(got(line,inputStack), scope,inputStack);
+	else if(strcmp(getInstruction(line),"halt") == 0 )
+		exit(1); // make me better!!!!
 }
 
 void  doOutput(char *line,Stack* scope)
@@ -183,8 +198,8 @@ void  doOutput(char *line,Stack* scope)
 		fprintf(FP,"%d\n",scope ->top -> value);
 	}
 	// show the current stack rn
-	stack2string(scope,10);
-	printf("\n");
+	//stack2string(scope,10);
+	//printf("\n");
 }
 void doPush(Stack* scope, int value, char *name, int address)
 {

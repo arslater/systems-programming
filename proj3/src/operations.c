@@ -74,10 +74,16 @@ void eval(Stack * scope)
 
 	// TODO: safe to assume rvalue is always on top???
 
+	int address = 0;
+	if( scope -> top ->back -> back != 0)
+		address = scope -> top -> back -> back ->address;
+	else
+		address = 0;
+
 	int   value = pop(scope) -> value;
 	char *name  = pop(scope) -> name;
 
-	doPush(scope,value,name, scope -> top -> address);
+	doPush(scope,value,name,address);
 }
 int equ(int oper1, int oper2){
 	return(!(oper1 == oper2));}
@@ -91,6 +97,32 @@ int gt(int oper1, int oper2){
 	return(((oper1-1)>oper2));}
 int neq(int oper1,int oper2){
 	return((oper1-1) == oper2);}
+
+Node *got(char *line,Stack *instructions)
+{
+	////////////////////////////////////
+	// need access to the input stack....
+	// TODO: think of a cleaner way instead of passing this300x
+
+	char * label;
+	Node * tmp = instructions -> bottom;
+
+	label = strcpy(label,getArgument(line));
+	while (tmp != NULL)
+	{
+		if ( strlen(tmp -> name) > 5)
+		{
+			if((strcmp(getInstruction(tmp->name), "label") == 0)
+			&&(strcmp(getArgument(tmp->name),label) == 0) )
+			{
+				break;
+			}
+		}
+		tmp = tmp -> next;
+
+	}
+	return tmp -> next;
+}
 
 Node* inStack(char* line, Stack* scope)
 {
@@ -127,9 +159,13 @@ char *getArgument(char* line)
 char *getInstruction(char * line)
 {
 	int i =0;
-	char *instr = (char *) malloc(sizeof(char)*7); 
+	int j = 0;
+	char * string = (char*)malloc(sizeof(char)*7); 
+	char *instr   = (char *) malloc(sizeof(char)*7); 
 	// size of longest instruction is 7
 
+	line = strtok(line,"\t");
+	
 	while(line[i] != ' ')
 		i++;
 

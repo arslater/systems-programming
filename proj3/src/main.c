@@ -40,18 +40,7 @@ int main(int argc, char **argv)
 
 	FP = stdout; //uncomment to print to the console
 
-	while( tmp != NULL)
-	{
-		if( tmp -> name != 0)
-		{
-			///////////////////////////////////
-			// Ignore empty strings & stop if we get the 'halt' command
-			if (strcmp(tmp ->name,"halt") == 0)
-				break;
-			switchInstruction(tmp ->name,workingStack);
-		}
-		tmp = tmp ->next;	
-	}
+	run(inputStack -> bottom, workingStack, inputStack);
 
 	free(inputStack);
 	free(*readLine);
