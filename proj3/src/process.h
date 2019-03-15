@@ -3,7 +3,7 @@
 #include "data.h"
 
 void run(Node *,Stack *,Stack *);		// TODO: think of a neater way todo this
-void switchInstruction(char *, Stack*,Stack*); // switches instruction to approp place
+void switchInstruction(Node *, Stack*,Stack*); // switches instruction to approp place
 
 // Cleaning up logic
 bool isLogclOprn(char *);
@@ -17,7 +17,7 @@ void doLogclOprn(char *,Stack*);
 void doRelatOprn(char *,Stack*);
 void doArthmOprn(char *,Stack*);
 void doStackOprn(char *,Stack*);
-void doCntrlOprn(char *,Stack*,Stack *);
+void doCntrlOprn(char *,Stack*,Stack *,Node *);
 void doOutput(char *,Stack*);
 
 int sum(int,int);	// +
@@ -27,7 +27,7 @@ int divi(int,int);	// "\"
 int mod(int,int);	// %
 
 int bang(int);		// !
-int pipe(int,int);	// |
+int pype(int,int);	// |
 int ampr(int,int);	// &
 
 void doPush(Stack*,int, char *,int); // includes the address now
@@ -37,13 +37,15 @@ void eval(Stack *);	// :=
 
 int equ(int,int);
 int leq(int,int);
-int geq(int,int);
+int geq(int,int);// >=
 int lt(int,int);
-int gt(int,int);
+int gt(int,int); // >
 int neq(int,int);
 
 void label(char *, Stack *);
 Node *got(char *, Stack*);		// goto is a keyword
+void gofalse(char *, Stack*,Stack *);
+void gotrue(char *,Stack*,Stack*);
 
 //utility functions
 Node *inStack(char *, Stack*);
