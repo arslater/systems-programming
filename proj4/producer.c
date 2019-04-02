@@ -5,11 +5,12 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <sys/wait.h>
+#include <string.h>
 
 int main()
 {
     // Want to create file first
-    FILE*   file = fopen("numbers","wr");
+    FILE*   file = fopen("numbers","w");;
     int   fp = open("numbers",O_RDONLY);
     int status = 0;
     int   i;
@@ -24,9 +25,9 @@ int main()
     // Generating the file with random numbers
     for(i=0;i<howManyNums;i++)
         fprintf(file,"%d ", rand()%maxNum);
-    //fclose(fp); // should it be closed?????????
-    //fgets(buff,60,file);
-    buff = "1 2 3 4 5";
+    fclose(file); // should it be closed?????????
+    file = fopen("numbers","r");
+    fgets(buff,howManyNums*3,file);
 
     if(pipe(fd)==-1 )
     {
@@ -44,9 +45,9 @@ int main()
     {
         ///////////////////////
         // We are the child
-        printf("I am the child!!!\n");
+       // printf("I am the child!!!\n");
         //dup2(fd[1],0);
-        write(fd[1], buff,sizeof(buff)+1);
+        write(fd[1], buff,strlen(buff)+1);
         dup2(fd[0],0);
         close(fd[1]);//no more writing
 

@@ -49,7 +49,7 @@ void main()
         }
         i++;
     }while(stream[i-1]!=0);
-    
+
     fprintf(stdout,"\nSum of odd values:%ld\n",sum);
 
     exit(2);
