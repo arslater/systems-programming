@@ -29,25 +29,53 @@ struct node
 	char *name;	// If a variable, it's name. NULL if just dealing with integers
 	int  address;
 
+	struct node  *position;	// current position of node
+	struct stack **scope;		// current scope stack
+    struct stack **parentStack; // the parent stack
+
 	//Below are only used for the stack
 	struct node *next;
 	struct node *back;
 };
 typedef struct node Node;
 
+///////////////////////////////////////////////
+// Basic stack structure
+struct stack
+{
+	Node *bottom;
+	Node *top;
+
+	// only used for groupstack
+	struct stack* next;
+	struct stack* back;
+
+    Node *ra;   //return address
+};
+typedef struct stack Stack;
+
+struct groupStack	// a stack of stacks
+{
+	Stack *top;
+	Stack *bottom;
+
+
+
+};
+typedef struct groupStack GroupStack;
+
+extern GroupStack* STACKOFSCOPES;
+/////////////////
+// group Stack manipulation functions
+
+void pushStack(GroupStack*,Stack*);
+Stack* popStack(GroupStack*);
+GroupStack *makeGroupStack();
+
 // Node manipulation functions
 Node *makeNode(char *,int); 		// create new node with a name and value
 									// IF a variable is added, it's value is initialized to zero
 									// If an integer is added, it's name is NULL
-
-///////////////////////////////////////////////
-// Basic stack structure 
-struct stack	
-{
-	Node *bottom;
-	Node *top;
-};
-typedef struct stack Stack;
 
 // Stack manipulation functions
 Stack *makeStack();				  // allocates memory for a new stack

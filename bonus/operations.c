@@ -59,7 +59,7 @@ void lvalue(char *line, Stack* scope)
 	{
 		// If it's already there, the next address
 		// will be the current address+1
-		doPush(scope,tmp->value, tmp -> name, tmp ->address+1); 
+		doPush(scope,tmp->value, tmp -> name, tmp ->address+1);
 	}
 	else
 		doPush(scope,0,name, address);
@@ -83,7 +83,7 @@ void eval(Stack * scope)
 	doPush(scope,value,name,getNextAddr(scope)-1);
 }
 int equ(int oper1, int oper2){
-	return(!(oper1 == oper2));}
+	return(oper1 != oper2);}
 int leq(int oper1,int oper2){
 	return((oper1-1) <= oper2);}
 int geq( int oper1, int oper2){
@@ -101,7 +101,7 @@ Node * got(char *line,Stack *instructions)
 	// need access to the input stack to get the
 	// the node where the label is
 
-	char * label;
+	char * label = (char*) malloc(sizeof(char)*strlen(line));
 	Node * tmp = instructions -> bottom;
 	label = strcpy(label,getArgument(line));
 	
@@ -144,117 +144,62 @@ void gotrue(char * line, Stack* scope,Stack* instructions)
 	if ( tmp -> value != 0 )
 		run(got(line,instructions),scope,instructions);
 }
-Node* inStack(char* line, Stack* scope)
+
+void call(Node *position, char *line, Stack*scope, Stack *inputStack)
 {
-	////////////////////////////////////
-	// Takes a string and sees if there is a node in the
-	// scope stack with the same name
-	Node * tmp   = scope -> top; // want to get most recent value
-	Node * rNode = NULL;
-	char *var    = getArgument(line);
+    scope -> ra = position;
+    // save position. Will need this for later
 
-	while( tmp != NULL)
-	{
-		if(strcmp(var,tmp ->name) == 0)
-		{
-			rNode = tmp;
-			break;
-		}
-		tmp = tmp -> back;
-	}
-	return rNode;
+    run(got(line,inputStack),scope,inputStack);
+    // basically a goto, so let's use that function
+
 }
-char *getArgument(char* line)
+
+void end(Stack *inputStack,Node *pos)
 {
-	//////////////////////////
-	// Voodoo magic to get rid of leading spaces and grab the
-	// argument ( the second word. )
-	char * name;
-	char * arg = NULL;
+	////////////////////////
+	// pops the top node from the scope stack
+	//
+    printf("ending!\n");
+	//popStack(STACKOFSCOPES); //I don't pop I guess...???????
 
-	if ( line != 0)
-	{
-		name = (char *)malloc(sizeof(char)*strlen(line));;
-		int i = 0;
-		arg = (char *) malloc(sizeof(char)*strlen(line));
-	
-		name = strtok (line," \t");
-		// Get rid of tabs and spaces
+	//Node *ra = STACKOFSCOPES->top->ra;
+	// so the current stack is now the top of stack of scopes
+	run(pos->next,STACKOFSCOPES->top,inputStack);
 
-		if(name != 0)
-		{
-			while (name[i] != '\0' && name[i] != 0)
-				i++;
-	
-			arg = &(name[i+1]);
-		}
-	}
-	if ( arg == 0)
-		arg = " ";	// kept getting errors when trying to manipulate empty strings
-	return arg;
 }
-char *getInstruction(char * line)
+
+void retn(Stack *inputStack,Stack *scope)
 {
-	int i = 0;
-	int j = 0;
-	char *instr   = (char *) malloc(sizeof(char)*7); 
-	char *cpy	  = (char *) malloc(sizeof(char)*strlen(line)); 
+    printf("returning\n");
 
-	strcpy(cpy, line);
+    // return does not pop any stacks
 
-	cpy = strtok(cpy," \t");
-	// getting rid of tabs and paces
-
-	if ( cpy != 0)
-	{
-		while( cpy[i] == ' ' && cpy[i] != 0)
-			i++;
-	
-		while( cpy[i] != ' ' && cpy[i] != 0)
-		{
-			instr[j] = cpy[i];
-			j++;
-			i++;
-		}
-	}
-	if( instr == 0 )
-		instr = " ";
-	return(instr);
+	//Node * ra = STACKOFSCOPES -> top -> back ->ra;
+    run(scope ->ra->next,scope,inputStack);
 }
 
-int getNextAddr(Stack * scope)
-{	
-	/////////////////////////
-	// Algorithmically get the next address
-	Node *tmp = scope -> bottom;
-	int max   = -1;
-
-	while(tmp != NULL)
-	{
-		if( tmp -> address > max)
-			max = tmp -> address;
-		tmp = tmp -> next;
-	}
-
-	return max;
-}
-
-void clean(Stack *workingStack,Stack*inputStack)
+void begin(Stack* inputStack, Stack*scope, Node *pos)
 {
 	/////////////////////////////////////
-	// Free all of the nodes in oth stacks
-	Node *tmp = workingStack -> bottom -> next;
+	// Creates a new Node with a "heap stack"
+	// and then pushes it
+	//
+    printf("beginning\n");
+   // Stack * heap    = makeStack();
 
-	while(tmp -> next!= NULL)
-	{
-		tmp = tmp -> next;
-		free(tmp -> back);
-	}
-	
-	tmp = inputStack -> bottom;
-	while(tmp -> next!= NULL)
-	{
-		tmp = tmp -> next;
-		free(tmp -> back);
-	}
-}	
+    // push the saved address as the top node
+    // of the previous stack
+
+
+	//Making a newNode onto the stack, which contains
+	// a "heap" a stack of all subroutine instructions
+
+	// we also want to add this new instruction set
+	// scope to the stack of scopes
+	//scope -> top ->position = pos;
+	//pushStack(STACKOFSCOPES,heap);
+
+	//run(pos ->next,heap,inputStack);
+	run(pos->next,scope,inputStack);
+}

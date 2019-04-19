@@ -15,13 +15,13 @@ void run(Node *instruction,Stack *scope,Stack *inputStack)
 //	stack2string(scope,10);
 //	printf("\n------------------------------------------\n");
 
-	if(instruction -> next != NULL)
+	if(instruction != NULL && instruction -> next != NULL)
 		run(instruction -> next,scope,inputStack);
 }
 
 void switchInstruction(Node* thisNode,Stack *scope,Stack *inputStack)
 {
-	if( thisNode != 0 && thisNode -> name != 0 && thisNode -> name != NULL)
+	if( thisNode != 0 && thisNode -> name != 0 && thisNode -> name != NULL && thisNode != NULL)
 	{
 		//////////////////////////////////////
 		// Ignore empty strings
@@ -39,6 +39,8 @@ void switchInstruction(Node* thisNode,Stack *scope,Stack *inputStack)
 			doArthmOprn(instruction,scope);
 		else if(isStackOprn(instruction))
 			doStackOprn(line,scope);
+		else if(isSubCntrol(instruction))
+			doSubCntrol(line,scope,inputStack,thisNode);
 		else if(isCntrlOprn(instruction))
 		{
 
@@ -50,7 +52,7 @@ void switchInstruction(Node* thisNode,Stack *scope,Stack *inputStack)
 	else
 		////////////////////////////////
 		// White spaces messing everything up!!
-		if(thisNode -> next != NULL)
+		if(thisNode != NULL && thisNode -> next != NULL)
 		    run(thisNode -> next,scope,inputStack);
 }
 bool isRelatOprn(char * line)
@@ -94,19 +96,18 @@ bool isCntrlOprn(char * line)
 	// label, goto, gotrue, gofalse, halt
 	//
 
-	return( (strcmp(line,"label") == 0) || (strcmp(line,"goto") ==0) 
-			|| (strcmp(line,"gofalse")==0) || (strcmp(line,"gotrue")==0)
+	return( (strcmp(line,"label") == 0) || (strcmp(line,"goto") ==0)
+			||(strcmp(line,"gofalse")==0) || (strcmp(line,"gotrue")==0)
 			||(strcmp(line,"halt")==0) || (strcmp(line,"halt\r")==0));
 }
-/*bool isOutput(char * line)
+bool isSubCntrol(char* line)
 {
-	//////////////////////////////
-	// "show,print"
-	//	
-	
-	return( (strstr(line,"show") != NULL) || (strstr(line,"print") != NULL));
+    ///////////////////////////////////
+    // begin, end, return, call
+    //
+    return( (strcmp(line,"begin")== 0)   || (strcmp(line,"end")==0)
+    		||(strcmp(line,"return")==0) || (strcmp(line,"call")==0));
 }
-*/
 void  doLogclOprn(char *line,Stack *scope)
 {
         int oper1 = (pop(scope))->value;
@@ -203,7 +204,7 @@ void  doCntrlOprn(char * line, Stack *scope, Stack *inputStack,Node * curNode)
 		     strcmp(getInstruction(line),"halt") == 0)
 	{
 		clean(scope, inputStack);
-		exit(1); 
+		exit(-9);
 	}
 	else if(strcmp(getInstruction(line),"gofalse") == 0)
 		gofalse(line,scope,inputStack);
@@ -212,6 +213,18 @@ void  doCntrlOprn(char * line, Stack *scope, Stack *inputStack,Node * curNode)
 	else if(strcmp(getInstruction(line),"label") == 0)
 		run(curNode -> next, scope,inputStack); 
 		// get the next instruction
+}
+
+void doSubCntrol(char *line, Stack* scope,Stack* inputStack,Node *pos)
+{
+	if (strcmp(getInstruction(line),"begin")== 0)
+		begin(inputStack,scope,pos);
+	else if (strcmp(getInstruction(line),"end")==0)
+		end(inputStack,pos);
+	else if( strcmp(getInstruction(line),"return")==0)
+		retn(inputStack, scope);
+	else if(strcmp(getInstruction(line),"call")==0)
+		call(pos,line,scope,inputStack );
 }
 
 void  doOutput(char *line1,Stack* scope)
@@ -230,7 +243,8 @@ void  doOutput(char *line1,Stack* scope)
 		//fprintf(FP,"@#@#@#:");
 		fprintf(FP,"%s\n", getArgument(line1));
 	}
-	else {
+	else
+	{
 		fprintf(FP, "%d\n", scope->top->value);
 		//fprintf(FP, "1111111:");
 	}

@@ -11,13 +11,14 @@ bool isRelatOprn(char *);
 bool isArthmOprn(char *);
 bool isStackOprn(char *);
 bool isCntrlOprn(char *);
-bool isOutput(char *);
+bool isSubCntrol(char *);
 
 void doLogclOprn(char *,Stack*);
 void doRelatOprn(char *,Stack*);
 void doArthmOprn(char *,Stack*);
 void doStackOprn(char *,Stack*);
 void doCntrlOprn(char *,Stack*,Stack *,Node *);
+void doSubCntrol(char *, Stack*,Stack*,Node *);
 void doOutput(char *,Stack*);
 
 int sum(int,int);	// +
@@ -46,6 +47,12 @@ Node *got(char *, Stack*);		// goto is a keyword
 void gofalse(char *, Stack*,Stack *);
 void gotrue(char *,Stack*,Stack*);
 void clean(Stack*, Stack*);
+
+// Subprogram functions
+void call(Node *, char *, Stack *, Stack*);
+void end(Stack *,Node*);
+void retn(Stack*,Stack*);
+void begin(Stack* inputStack,Stack* scope, Node*);
 
 //utility functions
 Node *inStack(char *, Stack*);

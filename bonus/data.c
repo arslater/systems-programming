@@ -19,6 +19,9 @@ Node *makeNode(char * name, int value)
 
 	newNode -> value = value;
 	newNode -> name  = name;
+    newNode -> address = -1;
+
+    newNode -> position = newNode; // idt i need this...
 
 	// stack elements
 	newNode -> next = NULL;
@@ -42,18 +45,18 @@ Stack* makeStack()
 
 Node* pop(Stack* stack)
 {
+	Node * tmp = NULL;
 	if( stack -> top != NULL)
 	{
 		// unempty stack
-		Node *tmp = stack -> top;
+		tmp = stack -> top;
 
 		stack -> top = stack -> top -> back;
 
 		tmp -> back = NULL;
 		tmp -> next = NULL;
-		
-		return(tmp); // return the detached node
 	}
+	return(tmp); // return the detached node
 }
 void push(Stack *stack, Node* newNode)
 {
@@ -62,6 +65,7 @@ void push(Stack *stack, Node* newNode)
 		// Unempty stack
 		stack   -> top -> next = newNode;
 		newNode -> back        = stack -> top;
+
 
 		stack -> top = newNode;
 	}
@@ -92,4 +96,47 @@ char * stack2string(Stack* expression, int length)// [debugging]
 		printf("|%s=%d(0x%d) |", tmp -> name,tmp->value,tmp->address);
 	}
 	return(returnString);
+}
+
+GroupStack *makeGroupStack()
+{
+	GroupStack *newGroup = (GroupStack*) malloc(sizeof(GroupStack));
+
+	newGroup -> top    = NULL;
+	newGroup -> bottom = NULL;
+
+	return(newGroup);
+}
+
+void pushStack(GroupStack* dest, Stack*src)
+{
+	/////////////////////////////////
+	//Pushing a stack onto a stack
+	if (dest -> top != NULL)
+	{
+		Stack * tmp = dest -> top;
+
+		dest -> top = src;
+		src -> back =  tmp;
+		tmp -> next = src;
+	}
+	else
+	{
+		dest -> top    = src;
+		dest -> bottom = src;
+	}
+}
+Stack *popStack(GroupStack* group)
+{
+	Stack *tmp = NULL;
+
+	if(group-> top != NULL)
+	{
+		tmp = group->top;
+		group->top = tmp->back;
+
+		tmp->next = NULL;
+		tmp->back = NULL;
+	}
+	return(tmp);
 }

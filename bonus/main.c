@@ -1,7 +1,8 @@
 #include"data.h"
 #include "process.h"
 
-FILE *FP = NULL;
+FILE  *FP = NULL;
+GroupStack *STACKOFSCOPES = NULL;
 
 int main(int argc, char **argv)
 {
@@ -40,11 +41,16 @@ int main(int argc, char **argv)
 
 	FP = stdout; //uncomment to print to the console
 
+	// Make stack of scopes
+	STACKOFSCOPES=makeGroupStack();
+
+	pushStack(STACKOFSCOPES,workingStack);
+
 	run(inputStack -> bottom, workingStack, inputStack);
 
 	free(inputStack);
 	free(*readLine);
 	fclose(fp);	
 	fclose(FP);
-return 0;
+exit(47);
 }
