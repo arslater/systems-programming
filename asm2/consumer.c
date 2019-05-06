@@ -16,6 +16,7 @@
 #include <string.h>
 #include <limits.h>
 
+
 char * FILENAME = "changeMe.txt";
 char REPLACE[2]  = "a";
 // Where are we getting the name of the file from?!?!?!
@@ -56,12 +57,19 @@ int main()
         getcwd(path,sizeof(path));
         strcat(path,"/");
         strcat(path,FILENAME);
+        strcat(path, " ");
+        strcat(path, REPLACE); // want to send a space separated array
 
+        dup2(fd1[0],0);
         write(fd1[1],path,sizeof(path)+1);
-        write(fd2[1],REPLACE,sizeof(REPLACE));
+        //write(fd2[1],REPLACE,sizeof(REPLACE));
         //write(fd[1],"hi",sizeof("hi"));
         close(fd1[1]);
-        close(fd2[1]);
+       // close(fd2[1]);
+
+        execvp("./producer",NULL);//run consumer
+        fprintf(stderr,"Exec failed\n"); // this should never show
+        exit(-2);
     }
     else
     {
@@ -72,18 +80,12 @@ int main()
         char car[2];
 
         close(fd1[1]);
-        close(fd2[1]);
-        read(fd1[0],buff,sizeof(buff));
-        read(fd2[0],car,sizeof(car));
-        printf("%s\n",buff);
-        printf("%s\n",car);
+       // close(fd2[1]);
+        //read(fd1[0],buff,sizeof(buff));
+        //read(fd2[0],car,sizeof(car));
+       // printf("%s\n",buff);
+       // printf("%s\n",car);
 
     }
-
-
-
-
-
-
     return 0;
 }

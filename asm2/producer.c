@@ -10,11 +10,45 @@
 //        4. The writer thread will write the line to an output file.
 //
 
-#include<stdio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <string.h>
+#include <limits.h>
+#include <pthread.h>
+
+char **doRead(char **);
+char **doRepl(char **);
+char **doUppr(char **);
+char **messages;
+pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 
 int main()
+
 {
-    printf("producer.c");
+    pthread_t reader, charachter,toUpper,writer;
+    int i;
+    //char *filename = (char *) malloc(sizeof(char)*45); // TODO: make this better
+    char filename[100];
+    messages = (char **)malloc(sizeof(char*)*100); // TODO: make this also beter
+
+
+    read(0,filename,sizeof(filename));
+
+    fprintf(stdout,"\n%s\n",filename);
+
 
     return 0;
+}
+
+char ** doRead(char **messages)
+{
+    /////////////////////////////////////////////
+    // Takes a "queue" of strings, and creates another "queue" of messages
+    // where each string element corresponds to a line in the input file
+
+    //while(!feof())
+
 }
