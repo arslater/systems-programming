@@ -25,14 +25,14 @@ int main()
 {
     //printf("%s\n",FILENAME);
 
-    FILE *fp = fopen(FILENAME, "w");
+  /*  FILE *fp = fopen(FILENAME, "r");
     if   (fp == NULL)
     {
         ///////////////////////////
         // can't read file
         fprintf(stderr,"Error opening '%s' for reading!\n",FILENAME);
     }
-
+*/
     pid_t pid = 0;
     int   fd1[2];
     int   fd2[2];
@@ -60,6 +60,7 @@ int main()
         strcat(path, " ");
         strcat(path, REPLACE); // want to send a space separated array
 
+        printf("<%s>\n",path);
         dup2(fd1[0],0);
         write(fd1[1],path,sizeof(path)+1);
         //write(fd2[1],REPLACE,sizeof(REPLACE));

@@ -19,36 +19,155 @@
 #include <limits.h>
 #include <pthread.h>
 
-char **doRead(char **);
-char **doRepl(char **);
-char **doUppr(char **);
-char **messages;
+void *doRead(void *);
+void *doRepl(void *);
+void *doUppr(void *);
+void *doWrite(void*);
+
+typedef struct threadData{
+    char **messageQueue;
+    char   replLetter;
+    char  *filename;
+    char  *outfile;
+
+} ThreadData;
+
 pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 
 int main()
 
 {
+
+    fprintf(stdout,"clion pls\n");
     pthread_t reader, charachter,toUpper,writer;
     int i;
-    //char *filename = (char *) malloc(sizeof(char)*45); // TODO: make this better
-    char filename[100];
-    messages = (char **)malloc(sizeof(char*)*100); // TODO: make this also beter
+    char consumerData[100]; // TODO: make this better!!!
+    char *filename = (char *)malloc(sizeof(char)*PATH_MAX);
+    char *REPLACE  = (char* )malloc(sizeof(char)*2);
+    int * threadNum = 0;
+    void* status    = 0;
+    ThreadData *MyThreadData = (ThreadData*) malloc(sizeof(ThreadData));
 
+    MyThreadData->messageQueue = (char **)malloc(sizeof(char*)*100); // TODO: make this also beter
 
-    read(0,filename,sizeof(filename));
+    read(0,consumerData,sizeof(consumerData));
 
-    fprintf(stdout,"\n%s\n",filename);
+    MyThreadData->filename   = strtok(consumerData," ");
+    MyThreadData->replLetter = strtok(NULL," ")[0];
+    MyThreadData->outfile = "outfile.txt";
 
+    // Have reader thread read the filename
+    pthread_create(&reader,NULL, doRead, (void*)MyThreadData);
+    pthread_join(reader,&status);
+
+    // Have the charachter Thread scan each line of the message thread and replace each space
+    pthread_create(&charachter,NULL,doRepl,(void *)MyThreadData);
+    pthread_join(charachter,&status);
+
+    pthread_create(&toUpper,NULL,doUppr,(void *)MyThreadData);
+    pthread_join(toUpper,&status);
+
+    pthread_create(&writer,NULL,doWrite,(void *)MyThreadData);
+    pthread_join(writer,&status);
+
+    fprintf(stdout,"\n%s -> %c\n| %s\n\n",MyThreadData->filename,MyThreadData->replLetter,MyThreadData->messageQueue[5]);
 
     return 0;
 }
 
-char ** doRead(char **messages)
+void *doRead(void *arg)
 {
     /////////////////////////////////////////////
-    // Takes a "queue" of strings, and creates another "queue" of messages
+    // Takes a filename "queue" of messages
     // where each string element corresponds to a line in the input file
 
-    //while(!feof())
+   ThreadData *thread = (ThreadData *)arg;
+   char buff[255];
 
+   FILE *fp = fopen(thread->filename,"r");
+
+   //printf("%s\n",thread->filename);
+
+
+   if ( fp == NULL)
+        fprintf(stderr,"Something went wrogn.. cannot open file\n");
+   int i = 0;
+   // maybe run this in a loop and this function just reads the file line by line..?
+
+    fprintf(stdout,"reading...\n");
+    thread->messageQueue[i] = (char *)malloc(sizeof(char)*100);
+    while(fgets(thread->messageQueue[i],255,fp))
+    {
+      // printf("READ LINE]%s",thread->messageQueue[i]);
+       i++;
+       thread->messageQueue[i] = (char *)malloc(sizeof(char)*100);
+    }
+
+    //printf("\n");
+    fclose(fp);
+   pthread_exit(NULL);
+}
+
+void *doRepl(void *arg)
+{
+    ThreadData *thread = (ThreadData *)arg;
+    int i = 0;
+    int j = 0;
+
+    printf("replacing....\n");
+    while( thread->messageQueue[i] != 0)
+    {
+        while(thread->messageQueue[i][j] != 0)
+        {
+           // printf("[%d][%d]:%c\n",i,j,thread->messageQueue[i][j]);
+            if(thread->messageQueue[i][j] == ' ')
+                thread->messageQueue[i][j] = thread->replLetter;
+            j++;
+        }
+       // printf("Observing: %s",thread->messageQueue[i]);
+        j = 0;
+        i++;
+    }
+
+    //printf("##%s\n",thread->messageQueue[4]);
+    //printf("\n");
+    pthread_exit(NULL);
+
+}
+
+void *doUppr(void *arg)
+{
+    ThreadData *thread = (ThreadData *)arg;
+    int i = 0;
+    int j = 0;
+
+    printf("replacing....\n");
+    while( thread->messageQueue[i] != 0)
+    {
+        while(thread->messageQueue[i][j] != 0)
+        {
+            if(thread->messageQueue[i][j] > 96 && thread->messageQueue[i][j] < 123)
+                thread->messageQueue[i][j] -=32;
+            j++;
+        }
+        j = 0;
+        i++;
+    }
+    pthread_exit(NULL);
+}
+
+void *doWrite(void *arg)
+{
+    ThreadData *thread = (ThreadData *)arg;
+    FILE* fp = fopen(thread->outfile,"w");
+    int i = 0;
+    int j = 0;
+
+    printf("replacing....\n");
+    while( thread->messageQueue[i] != 0)
+    {
+        fprintf(fp,"%s",thread->messageQueue[i]);
+        i++;
+    }
+    pthread_exit(NULL);
 }
